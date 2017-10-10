@@ -8262,7 +8262,7 @@
 
     _EditorApp.prototype.busy = function(busy) {
       if (busy === void 0) {
-        this._busy = busy;
+        return this._busy;
       }
       this._busy = busy;
       if (this._ignition) {
@@ -9193,6 +9193,44 @@
     return Tool;
 
   })();
+
+  ContentTools.Tools.ExampleTool = (function(_super) {
+    __extends(ExampleTool, _super);
+
+    function ExampleTool() {
+      return ExampleTool.__super__.constructor.apply(this, arguments);
+    }
+
+    ContentTools.ToolShelf.stow(ExampleTool, 'example-tool');
+
+    ExampleTool.label = 'ExampleTool';
+
+    ExampleTool.icon = 'bold';
+
+    ExampleTool.tagName = 'div';
+
+    ExampleTool.canApply = function(element, selection) {
+      if (!element.content) {
+        return false;
+      }
+      return selection && !selection.isCollapsed();
+    };
+
+    ExampleTool.apply = function(element, selection, callback) {
+      var from, to, _ref;
+      _ref = selection.get(), from = _ref[0], to = _ref[1];
+      element.content = element.content.unformat(from, to, new HTMLString.Tag(this.tagName));
+      element.content.optimize();
+      element.updateInnerHTML();
+      element.taint();
+      element.restoreState();
+      callback(true);
+      return this.dispatchEditorEvent('tool-applied', toolDetail);
+    };
+
+    return ExampleTool;
+
+  })(ContentTools.Tool);
 
   ContentTools.Tools.Bold = (function(_super) {
     __extends(Bold, _super);

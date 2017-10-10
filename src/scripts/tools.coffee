@@ -82,6 +82,29 @@ class ContentTools.Tool
 
 # Common tools
 
+class ContentTools.Tools.ExampleTool extends ContentTools.Tool
+    ContentTools.ToolShelf.stow(@, 'example-tool')
+    @label = 'ExampleTool'
+    @icon = 'bold'
+    @tagName = 'div'
+
+    @canApply: (element, selection) ->
+        unless element.content
+            return false
+
+        return selection and not selection.isCollapsed()
+
+    @apply: (element, selection, callback) ->
+        [from, to] = selection.get()
+        element.content = element.content.unformat(from,to,new HTMLString.Tag(@tagName))
+        element.content.optimize()
+        element.updateInnerHTML()
+        element.taint()
+        element.restoreState()
+        callback(true)
+        # Dispatch `applied` event
+        @dispatchEditorEvent('tool-applied', toolDetail)
+
 class ContentTools.Tools.Bold extends ContentTools.Tool
 
     # Make the current selection of text (non)bold (e.g <b>foo</b>).
